@@ -3,24 +3,37 @@
 import React, { useState, useCallback } from "react";
 import { ColumnConfig } from "../../types/column";
 import { Table as UITable } from "@/components/ui/table";
-import { TableHeader } from "./components/TableHeader";
-import { TableBody } from "./components/TableBody";
+import { TableHeader } from "./components/header/TableHeader";
+import { TableBody } from "./components/body/TableBody";
+import type { SortState } from "./components/header/TableHeader";
 
 interface TableProps<T> {
   columns: ColumnConfig<T>[];
   data: T[];
   isRowSelectionEnabled?: boolean;
   onSelectionChange?: (selectedRows: T[]) => void;
+  defaultSortColumn?: string;
+  defaultSortDirection?: "asc" | "desc";
 }
 
 export function Table<T extends { id: string }>({
   columns: initialColumns,
-  data,
+  data: initialData,
   isRowSelectionEnabled = false,
   onSelectionChange,
+  defaultSortColumn,
+  defaultSortDirection,
 }: TableProps<T>) {
   const [columns, setColumns] = useState<ColumnConfig<T>[]>(initialColumns);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  const [sortState, setSortState] = useState<SortState | undefined>(
+    defaultSortColumn
+      ? {
+          columnId: defaultSortColumn,
+          direction: defaultSortDirection ?? "asc",
+        }
+      : undefined
+  );
 
   const handleColumnReorder = (startIndex: number, endIndex: number) => {
     const newColumns = [...columns];
@@ -33,16 +46,16 @@ export function Table<T extends { id: string }>({
     (checked: boolean) => {
       const newSelectedRows = new Set<string>();
       if (checked) {
-        data.forEach((row) => newSelectedRows.add(row.id));
+        initialData.forEach((row) => newSelectedRows.add(row.id));
       }
       setSelectedRows(newSelectedRows);
       onSelectionChange?.(
         Array.from(newSelectedRows).map(
-          (id) => data.find((row) => row.id === id)!
+          (id) => initialData.find((row) => row.id === id)!
         )
       );
     },
-    [data, onSelectionChange]
+    [initialData, onSelectionChange]
   );
 
   const handleSelectRow = useCallback(
@@ -56,16 +69,42 @@ export function Table<T extends { id: string }>({
       setSelectedRows(newSelectedRows);
       onSelectionChange?.(
         Array.from(newSelectedRows).map(
-          (id) => data.find((row) => row.id === id)!
+          (id) => initialData.find((row) => row.id === id)!
         )
       );
     },
-    [selectedRows, data, onSelectionChange]
+    [selectedRows, initialData, onSelectionChange]
   );
 
-  const isAllSelected = data.length > 0 && selectedRows.size === data.length;
+  const handleSort = useCallback((newSortState: SortState) => {
+    setSortState(newSortState.direction === null ? undefined : newSortState);
+  }, []);
+
+  const sortedData = React.useMemo(() => {
+    if (!sortState) return initialData;
+
+    const column = columns.find((col) => col.id === sortState.columnId);
+    if (!column?.isSortable) return initialData;
+
+    return [...initialData].sort((a, b) => {
+      const aValue = a[column.id];
+      const bValue = b[column.id];
+      const direction = sortState.direction === "asc" ? 1 : -1;
+
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        return aValue.localeCompare(bValue) * direction;
+      }
+
+      if (aValue < bValue) return -1 * direction;
+      if (aValue > bValue) return 1 * direction;
+      return 0;
+    });
+  }, [initialData, columns, sortState]);
+
+  const isAllSelected =
+    initialData.length > 0 && selectedRows.size === initialData.length;
   const isIndeterminate =
-    selectedRows.size > 0 && selectedRows.size < data.length;
+    selectedRows.size > 0 && selectedRows.size < initialData.length;
 
   return (
     <UITable>
@@ -76,10 +115,12 @@ export function Table<T extends { id: string }>({
         isAllSelected={isAllSelected}
         isIndeterminate={isIndeterminate}
         onSelectAll={handleSelectAll}
+        onSort={handleSort}
+        sortState={sortState}
       />
       <TableBody
         columns={columns}
-        data={data}
+        data={sortedData}
         isRowSelectionEnabled={isRowSelectionEnabled}
         selectedRows={selectedRows}
         onSelectRow={handleSelectRow}

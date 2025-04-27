@@ -42,6 +42,7 @@ const columns: ColumnConfig<SampleData>[] = [
     type: "text",
     minWidth: 150,
     cell: (row) => <div>{row.name}</div>,
+    isSortable: true,
   },
   {
     id: "age",
@@ -49,6 +50,7 @@ const columns: ColumnConfig<SampleData>[] = [
     type: "number",
     minWidth: 100,
     cell: (row) => <div>{row.age}</div>,
+    isSortable: true,
   },
   {
     id: "email",
@@ -64,6 +66,7 @@ const columns: ColumnConfig<SampleData>[] = [
     selectOptions: ["Active", "Inactive"],
     minWidth: 120,
     cell: (row) => <div>{row.status}</div>,
+    isSortable: true,
   },
 ];
 

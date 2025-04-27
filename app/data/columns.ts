@@ -55,6 +55,7 @@ export const columns: ColumnConfig<RowData>[] = [
     minWidth: 120,
     isEditable: true,
     cell: (row) => row.select,
+    isSortable: true,
   },
   {
     id: "multiSelect",
@@ -70,6 +71,7 @@ export const columns: ColumnConfig<RowData>[] = [
     minWidth: 200,
     isEditable: true,
     cell: (row) => row.multiSelect,
+    isSortable: true,
   },
   {
     id: "user",
@@ -78,6 +80,7 @@ export const columns: ColumnConfig<RowData>[] = [
     minWidth: 150,
     isEditable: true,
     cell: (row) => row.user,
+    isSortable: true,
   },
   {
     id: "rating",
@@ -86,6 +89,7 @@ export const columns: ColumnConfig<RowData>[] = [
     minWidth: 150,
     isEditable: true,
     cell: (row) => row.rating,
+    isSortable: true,
   },
   {
     id: "toggle",
@@ -94,6 +98,7 @@ export const columns: ColumnConfig<RowData>[] = [
     minWidth: 120,
     isEditable: true,
     cell: (row) => row.toggle,
+    isSortable: true,
   },
   {
     id: "checkbox",
@@ -102,5 +107,6 @@ export const columns: ColumnConfig<RowData>[] = [
     minWidth: 100,
     isEditable: true,
     cell: (row) => row.checkbox,
+    isSortable: true,
   },
 ];
