@@ -1,36 +1,30 @@
-import {
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  closestCenter,
-  useSensor,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  SortableContainer,
-  SortableItem,
-  sortableKeyboardCoordinates,
-} from "@dnd-kit/sortable";
-import { useSensors } from "@dnd-kit/core";
+"use client";
 
-export const Table = () => {
-  // DND logic
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
+import React, { useState } from "react";
+import { ColumnConfig } from "../../types/column";
+import { Table as UITable } from "@/components/ui/table";
+import { TableHeader } from "./components/TableHeader";
+import { TableBody } from "./components/TableBody";
+
+interface TableProps<T> {
+  columns: ColumnConfig<T>[];
+  data: T[];
+}
+
+export function Table<T>({ columns: initialColumns, data }: TableProps<T>) {
+  const [columns, setColumns] = useState<ColumnConfig<T>[]>(initialColumns);
+
+  const handleColumnReorder = (startIndex: number, endIndex: number) => {
+    const newColumns = [...columns];
+    const [removed] = newColumns.splice(startIndex, 1);
+    newColumns.splice(endIndex, 0, removed);
+    setColumns(newColumns);
+  };
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      //   onDragEnd={handleDragEnd}
-    ></DndContext>
+    <UITable>
+      <TableHeader columns={columns} onColumnReorder={handleColumnReorder} />
+      <TableBody columns={columns} data={data} />
+    </UITable>
   );
-};
+}

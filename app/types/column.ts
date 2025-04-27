@@ -2,7 +2,6 @@ export type ColumnType =
   | "text"
   | "number"
   | "date"
-  | "boolean"
   | "select"
   | "multi-select"
   | "user"

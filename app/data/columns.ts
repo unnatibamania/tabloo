@@ -46,14 +46,7 @@ export const columns: ColumnConfig<RowData>[] = [
     isSortable: true,
     cell: (row) => row.date,
   },
-  {
-    id: "boolean",
-    header: "Active",
-    type: "boolean",
-    minWidth: 100,
-    isEditable: true,
-    cell: (row) => row.boolean,
-  },
+
   {
     id: "select",
     header: "Priority",
