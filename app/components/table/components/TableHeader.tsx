@@ -2,7 +2,11 @@
 
 import React from "react";
 import { ColumnConfig } from "@/app/types/column";
-import { TableHeader as UITableHeader, TableRow } from "@/components/ui/table";
+import {
+  TableHeader as UITableHeader,
+  TableRow,
+  TableHead,
+} from "@/components/ui/table";
 import {
   DndContext,
   closestCenter,
@@ -19,15 +23,24 @@ import {
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { DraggableColumnHeader } from "./DraggableColumnHeader";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface TableHeaderProps<T> {
   columns: ColumnConfig<T>[];
   onColumnReorder?: (startIndex: number, endIndex: number) => void;
+  isRowSelectionEnabled?: boolean;
+  isAllSelected?: boolean;
+  isIndeterminate?: boolean;
+  onSelectAll?: (checked: boolean) => void;
 }
 
-export function TableHeader<T>({
+export function TableHeader<T extends Record<string, unknown>>({
   columns,
   onColumnReorder,
+  isRowSelectionEnabled = false,
+  isAllSelected = false,
+  isIndeterminate = false,
+  onSelectAll,
 }: TableHeaderProps<T>) {
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -63,6 +76,24 @@ export function TableHeader<T>({
     >
       <UITableHeader>
         <TableRow>
+          {isRowSelectionEnabled && (
+            <TableHead className="w-[50px] px-4 !pr-0">
+              <div className="flex h-full items-center justify-center">
+                <Checkbox
+                  checked={isAllSelected}
+                  onCheckedChange={onSelectAll}
+                  aria-label="Select all"
+                  data-state={
+                    isIndeterminate
+                      ? "indeterminate"
+                      : isAllSelected
+                      ? "checked"
+                      : "unchecked"
+                  }
+                />
+              </div>
+            </TableHead>
+          )}
           <SortableContext
             items={columns.map((col) => col.id)}
             strategy={horizontalListSortingStrategy}

@@ -3,7 +3,7 @@
 import React from "react";
 import { ColumnConfig } from "@/app/types/column";
 import { TableBody as UITableBody } from "@/components/ui/table";
-import { TableRow } from "./body/TableRow";
+import { TableRow } from "./TableRow";
 
 interface TableBodyProps<T> {
   columns: ColumnConfig<T>[];

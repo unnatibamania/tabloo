@@ -73,7 +73,14 @@ export default function Home() {
       <div className="flex flex-col gap-4">
         <h1 className="text-3xl font-bold tracking-tight">Data Grid Example</h1>
         <div className="rounded-md border">
-          <Table columns={columns} data={sampleData} />
+          <Table
+            columns={columns}
+            isRowSelectionEnabled
+            data={sampleData}
+            onSelectionChange={(selectedRows) => {
+              console.log(selectedRows);
+            }}
+          />
         </div>
       </div>
     </div>
