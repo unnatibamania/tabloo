@@ -20,7 +20,7 @@ type BaseColumnConfig<T> = {
   isEditable?: boolean;
   isDeletable?: boolean;
   isDraggable?: boolean;
-  cell?: (row: T) => React.ReactNode;
+  cell: (row: T) => React.ReactNode;
 };
 
 // Type union for all possible column configurations

@@ -25,7 +25,7 @@ interface TableHeaderProps<T> {
   onColumnReorder?: (startIndex: number, endIndex: number) => void;
 }
 
-export function TableHeader<T extends Record<string, unknown>>({
+export function TableHeader<T>({
   columns,
   onColumnReorder,
 }: TableHeaderProps<T>) {

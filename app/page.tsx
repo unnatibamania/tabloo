@@ -41,18 +41,21 @@ const columns: ColumnConfig<SampleData>[] = [
     header: "Name",
     type: "text",
     minWidth: 150,
+    cell: (row) => <div>{row.name}</div>,
   },
   {
     id: "age",
     header: "Age",
     type: "number",
     minWidth: 100,
+    cell: (row) => <div>{row.age}</div>,
   },
   {
     id: "email",
     header: "Email",
     type: "text",
     minWidth: 200,
+    cell: (row) => <div>{row.email}</div>,
   },
   {
     id: "status",
@@ -60,6 +63,7 @@ const columns: ColumnConfig<SampleData>[] = [
     type: "select",
     selectOptions: ["Active", "Inactive"],
     minWidth: 120,
+    cell: (row) => <div>{row.status}</div>,
   },
 ];
 

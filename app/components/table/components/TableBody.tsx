@@ -20,7 +20,7 @@ export function TableBody<T>({ columns, data }: TableBodyProps<T>) {
         <TableRow key={rowIndex}>
           {columns.map((column) => (
             <TableCell key={`${rowIndex}-${column.id}`}>
-              {column.cell ? column.cell(row) : String(row[column.id])}
+              {column.cell(row)}
             </TableCell>
           ))}
         </TableRow>
