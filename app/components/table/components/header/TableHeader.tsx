@@ -27,7 +27,7 @@ export interface SortState {
 }
 
 interface TableHeaderProps<T> {
-  columns: ColumnConfig<T>[];
+  columns: (ColumnConfig<T> & { width: number })[];
   onColumnReorder?: (startIndex: number, endIndex: number) => void;
   isRowSelectionEnabled?: boolean;
   isAllSelected?: boolean;
@@ -35,6 +35,7 @@ interface TableHeaderProps<T> {
   onSelectAll?: (checked: boolean) => void;
   onSort?: (sortState: SortState) => void;
   sortState?: SortState;
+  onColumnResize?: (columnId: string, width: number) => void;
 }
 
 export function TableHeader<T extends Record<string, unknown>>({
@@ -46,6 +47,7 @@ export function TableHeader<T extends Record<string, unknown>>({
   onSelectAll,
   onSort,
   sortState,
+  onColumnResize,
 }: TableHeaderProps<T>) {
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -102,7 +104,7 @@ export function TableHeader<T extends Record<string, unknown>>({
           {isRowSelectionEnabled && (
             <TableCheckboxCell
               checked={isAllSelected}
-              onCheckedChange={onSelectAll}
+              onCheckedChange={(checked: boolean) => onSelectAll?.(checked)}
               ariaLabel="Select all"
               isHeader
               isIndeterminate={isIndeterminate}
@@ -116,10 +118,12 @@ export function TableHeader<T extends Record<string, unknown>>({
               <DraggableColumnHeader
                 key={column.id}
                 column={column}
+                width={column.width}
                 sortDirection={
                   sortState?.columnId === column.id ? sortState.direction : null
                 }
                 onSort={() => handleSort(column.id)}
+                onResize={(width) => onColumnResize?.(column.id, width)}
               />
             ))}
           </SortableContext>

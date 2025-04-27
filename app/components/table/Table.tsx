@@ -24,7 +24,14 @@ export function Table<T extends { id: string }>({
   defaultSortColumn,
   defaultSortDirection,
 }: TableProps<T>) {
-  const [columns, setColumns] = useState<ColumnConfig<T>[]>(initialColumns);
+  const [columns, setColumns] = useState<
+    (ColumnConfig<T> & { width: number })[]
+  >(
+    initialColumns.map((col) => ({
+      ...col,
+      width: col.minWidth || 150,
+    }))
+  );
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [sortState, setSortState] = useState<SortState | undefined>(
     defaultSortColumn
@@ -41,6 +48,17 @@ export function Table<T extends { id: string }>({
     newColumns.splice(endIndex, 0, removed);
     setColumns(newColumns);
   };
+
+  const handleColumnResize = useCallback(
+    (columnId: string, newWidth: number) => {
+      setColumns((prevColumns) =>
+        prevColumns.map((col) =>
+          col.id === columnId ? { ...col, width: newWidth } : col
+        )
+      );
+    },
+    []
+  );
 
   const handleSelectAll = useCallback(
     (checked: boolean) => {
@@ -87,8 +105,8 @@ export function Table<T extends { id: string }>({
     if (!column?.isSortable) return initialData;
 
     return [...initialData].sort((a, b) => {
-      const aValue = a[column.id];
-      const bValue = b[column.id];
+      const aValue = a[column.id as keyof T];
+      const bValue = b[column.id as keyof T];
       const direction = sortState.direction === "asc" ? 1 : -1;
 
       if (typeof aValue === "string" && typeof bValue === "string") {
@@ -107,24 +125,27 @@ export function Table<T extends { id: string }>({
     selectedRows.size > 0 && selectedRows.size < initialData.length;
 
   return (
-    <UITable>
-      <TableHeader
-        columns={columns}
-        onColumnReorder={handleColumnReorder}
-        isRowSelectionEnabled={isRowSelectionEnabled}
-        isAllSelected={isAllSelected}
-        isIndeterminate={isIndeterminate}
-        onSelectAll={handleSelectAll}
-        onSort={handleSort}
-        sortState={sortState}
-      />
-      <TableBody
-        columns={columns}
-        data={sortedData}
-        isRowSelectionEnabled={isRowSelectionEnabled}
-        selectedRows={selectedRows}
-        onSelectRow={handleSelectRow}
-      />
-    </UITable>
+    <div className="w-full overflow-x-auto">
+      <UITable>
+        <TableHeader
+          columns={columns}
+          onColumnReorder={handleColumnReorder}
+          isRowSelectionEnabled={isRowSelectionEnabled}
+          isAllSelected={isAllSelected}
+          isIndeterminate={isIndeterminate}
+          onSelectAll={handleSelectAll}
+          onSort={handleSort}
+          sortState={sortState}
+          onColumnResize={handleColumnResize}
+        />
+        <TableBody
+          columns={columns}
+          data={sortedData}
+          isRowSelectionEnabled={isRowSelectionEnabled}
+          selectedRows={selectedRows}
+          onSelectRow={handleSelectRow}
+        />
+      </UITable>
+    </div>
   );
 }
